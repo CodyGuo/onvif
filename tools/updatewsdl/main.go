@@ -24,14 +24,14 @@ const (
 	timeout = 30
 )
 
-type Wsdl struct {
-	Title string
-	Data  string
-	Url   string
+type wsdl struct {
+	title string
+	date  string
+	url   string
 }
 
 type Wsdls struct {
-	wl []Wsdl
+	wl []wsdl
 }
 
 func NewWsdls() *Wsdls {
@@ -52,10 +52,10 @@ func (w *Wsdls) GetWsdlFiles() error {
 	// fmt.Printf("总计：%d\n", len(w.wl))
 	for index, wl := range w.wl {
 		// fmt.Printf("%s -> %s -> %s\n\n", wl.Data, wl.Title, wl.Url)
-		w.writeFile(wl.Url)
+		w.writeFile(wl.url)
 
-		name := filepath.Base(wl.Url)
-		updateLog.WriteString(fmt.Sprintf("%-2d - %-21s - %s - %s - %s\r\n", index+1, name, wl.Data, wl.Title, wl.Url))
+		name := filepath.Base(wl.url)
+		updateLog.WriteString(fmt.Sprintf("%-2d - %-21s - %s - %s - %s\r\n", index+1, name, wl.date, wl.title, wl.url))
 	}
 	updateLog.Sync()
 
@@ -103,12 +103,12 @@ func (w *Wsdls) getWsdl() error {
 	wsdls.Each(func(i int, s *goquery.Selection) {
 		result := strings.Split(s.Text(), "-")
 		title := strings.TrimSpace(result[1])
-		data := strings.TrimSpace(result[0])
+		date := strings.TrimSpace(result[0])
 
 		href, _ := s.Find("a").Attr("href")
 		urls := fmt.Sprintf("%s%s", host, href)
 
-		w.wl = append(w.wl, Wsdl{title, data, urls})
+		w.wl = append(w.wl, wsdl{title, date, urls})
 	})
 
 	return nil
