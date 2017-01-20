@@ -1,0 +1,27 @@
+1  - devicemgmt.wsdl       - Dec 2016 - ONVIF Device Management Service WSDL, ver 16.12 - http://www.onvif.org/onvif/ver10/device/wsdl/devicemgmt.wsdl
+2  - event.wsdl            - Jun 2015 - ONVIF Event Service WSDL, ver 2.6 - http://www.onvif.org/onvif/ver10/events/wsdl/event.wsdl
+3  - display.wsdl          - Jun 2011 - ONVIF Display Service WSDL, ver 2.1.1 - http://www.onvif.org/onvif/ver10/display.wsdl
+4  - deviceio.wsdl         - Dec 2016 - ONVIF Device_IO Service WSDL, ver 16.12 - http://www.onvif.org/onvif/ver10/deviceio.wsdl
+5  - imaging.wsdl          - Sep 2016 - ONVIF Imaging Service WSDL, ver 16.09 - http://www.onvif.org/onvif/ver20/imaging/wsdl/imaging.wsdl
+6  - media.wsdl            - Jun 2015 - ONVIF Media Service WSDL, ver 2.6 - http://www.onvif.org/onvif/ver10/media/wsdl/media.wsdl
+7  - media.wsdl            - Dec 2016 - ONVIF Media2 Service WSDL, ver 16.12 - http://www.onvif.org/onvif/ver20/media/wsdl/media.wsdl
+8  - provisioning.wsdl     - Dec 2016 - ONVIF Provisioning Service WSDL, ver 16.06 - http://www.onvif.org/onvif/ver10/provisioning/wsdl/provisioning.wsdl
+9  - ptz.wsdl              - Dec 2016 - ONVIF PTZ Service WSDL, ver 16.12 - http://www.onvif.org/onvif/ver20/ptz/wsdl/ptz.wsdl
+10 - receiver.wsdl         - Jan 2012 - ONVIF Receiver Service WSDL, ver 2.1.1 - http://www.onvif.org/onvif/ver10/receiver.wsdl
+11 - recording.wsdl        - Dec 2016 - ONVIF Recording_Control Service WSDL, ver 16.12 - http://www.onvif.org/onvif/ver10/recording.wsdl
+12 - search.wsdl           - Jun 2014 - ONVIF Recording_Search Service WSDL, ver 2.4.2 - http://www.onvif.org/onvif/ver10/search.wsdl
+13 - replay.wsdl           - Dec 2016 - ONVIF Replay Service WSDL, ver 16.12 - http://www.onvif.org/onvif/ver10/replay.wsdl
+14 - thermal.wsdl          - Jun 2016 - ONVIF Thermal Service WSDL, ver 16.06 - http://www.onvif.org/onvif/ver10/thermal/wsdl/thermal.wsdl
+15 - analytics.wsdl        - Dec 2016 - ONVIF Analytics Service WSDL, ver 16.12 - http://www.onvif.org/onvif/ver20/analytics/wsdl/analytics.wsdl
+16 - rules.xsd             - Dec 2016 - ONVIF Analytics Rules Schema, ver 16.12 - http://www.onvif.org/onvif/ver20/analytics/rules.xsd
+17 - metadatastream.xsd    - Dec 2016 - ONVIF Metadata Streaming Schema, ver 16.12 - http://www.onvif.org/onvif/ver10/schema/metadatastream.xsd
+18 - analyticsdevice.wsdl  - Jun 2011 - ONVIF Video Analytics Device_Service WSDL, ver 2.1.1 - http://www.onvif.org/onvif/ver10/analyticsdevice.wsdl
+19 - onvif.xsd             - Dec 2016 - ONVIF Schema, ver 16.12 - http://www.onvif.org/onvif/ver10/schema/onvif.xsd
+20 - actionengine.wsdl     - May 2012 - ONVIF Action Engine Service WSDL, ver 1.0 - http://www.onvif.org/ver10/actionengine.wsdl
+21 - accesscontrol.wsdl    - Dec 2013 - ONVIF Access Control Service WSDL, ver 1.0.1 - http://www.onvif.org/ver10/pacs/accesscontrol.wsdl
+22 - doorcontrol.wsdl      - May 2013 - ONVIF Door Control Service WSDL, ver 1.0 - http://www.onvif.org/ver10/pacs/doorcontrol.wsdl
+23 - advancedsecurity.wsdl - Oct 2016 - ONVIF Advanced Security Service WSDL, ver 16.10 - http://www.onvif.org/ver10/advancedsecurity/wsdl/advancedsecurity.wsdl
+24 - accessrules.wsdl      - Jun 2015 - ONVIF AccessRules Service WSDL, ver 1.0 - http://www.onvif.org/ver10/accessrules/wsdl/accessrules.wsdl
+25 - credential.wsdl       - Jun 2015 - ONVIF Credential Service WSDL, ver 1.0 - http://www.onvif.org/ver10/credential/wsdl/credential.wsdl
+26 - schedule.wsdl         - Jun 2015 - ONVIF Schedule Service WSDL, ver 1.0 - http://www.onvif.org/ver10/schedule/wsdl/schedule.wsdl
+27 - types.xsd             - Dec 2015 - ONVIF PACS Schema, ver 1.1 - http://www.onvif.org/ver10/pacs/types.xsd

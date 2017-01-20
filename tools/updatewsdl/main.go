@@ -6,116 +6,147 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
+)
 
+import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/cheggaaa/pb"
 )
 
 const (
-	url   = "http://www.onvif.org/Documents/Specifications.aspx"
-	index = 7
+	url = "http://www.onvif.org/Documents/Specifications.aspx"
+
+	index   = 7
+	timeout = 30
 )
 
-type WSDL struct {
+type Wsdl struct {
 	Title string
 	Data  string
 	Url   string
 }
 
-func (ws *WSDL) queryParse() <-chan WSDL {
-	doc, err := goquery.NewDocument(url)
-	checkErr("newDocument", err)
+type Wsdls struct {
+	wl []Wsdl
+}
 
-	var scheme string
-	if doc.Url.Scheme == "http" {
-		scheme = "http://"
-	} else {
-		scheme = "https://"
+func NewWsdls() *Wsdls {
+	wl := new(Wsdls)
+	err := wl.getWsdl()
+	if err != nil {
+		log.Println(err)
+		return nil
 	}
-	urlHost := strings.Join([]string{scheme, doc.Url.Host}, "")
+	return wl
+}
 
-	out := make(chan WSDL)
-	var wg sync.WaitGroup
-	wsdls := doc.Find("#dnn_ctr400_HtmlModule_lblContent ul").Eq(index).Find("li")
+func (w *Wsdls) GetWsdlFiles() error {
+	updateLog, err := os.OpenFile("../../wsdl/update.log", os.O_TRUNC|os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)
+	checkErr(err)
+	defer updateLog.Close()
+
+	// fmt.Printf("总计：%d\n", len(w.wl))
+	for index, wl := range w.wl {
+		// fmt.Printf("%s -> %s -> %s\n\n", wl.Data, wl.Title, wl.Url)
+		w.writeFile(wl.Url)
+
+		name := filepath.Base(wl.Url)
+		updateLog.WriteString(fmt.Sprintf("%-2d - %-21s - %s - %s - %s\r\n", index+1, name, wl.Data, wl.Title, wl.Url))
+	}
+	updateLog.Sync()
+
+	return nil
+}
+
+func (w *Wsdls) writeFile(wsurl string) {
+	resp, err := http.Get(wsurl)
+	defer resp.Body.Close()
+	checkErr(err)
+	if resp.StatusCode == http.StatusOK {
+		wsName := filepath.Base(wsurl)
+		if strings.Contains(wsurl, "ver20") {
+			ext := filepath.Ext(wsName)
+			wsName = strings.Split(wsName, ext)[0] + "2" + ext
+		}
+		os.MkdirAll("../../wsdl/", 0666)
+		downFile, err := os.Create("../../wsdl/" + wsName)
+		checkErr(err)
+		defer downFile.Close()
+
+		total, _ := strconv.Atoi(resp.Header.Get("Content-Length"))
+
+		processBar(total, func(bar *pb.ProgressBar) {
+			bar.Prefix(wsName + " -> ")
+			dst := io.MultiWriter(downFile, bar)
+			io.Copy(dst, resp.Body)
+		})
+	}
+}
+
+func (w *Wsdls) getWsdl() error {
+	doc, err := goquery.NewDocument(url)
+	if err != nil {
+		return err
+	}
+	host := strings.Join([]string{
+		doc.Url.Scheme,
+		"://",
+		doc.Url.Host}, "")
+	wsdls := doc.
+		Find("#dnn_ctr400_HtmlModule_lblContent ul").Eq(index).
+		Find("li")
+
 	wsdls.Each(func(i int, s *goquery.Selection) {
 		result := strings.Split(s.Text(), "-")
 		title := strings.TrimSpace(result[1])
 		data := strings.TrimSpace(result[0])
+
 		href, _ := s.Find("a").Attr("href")
-		urls := fmt.Sprintf("%s%s", urlHost, href)
+		urls := fmt.Sprintf("%s%s", host, href)
 
-		wg.Add(1)
-		go func() {
-			out <- WSDL{title, data, urls}
-			wg.Done()
-		}()
-
+		w.wl = append(w.wl, Wsdl{title, data, urls})
 	})
-	go func() {
-		wg.Wait()
-		close(out)
-	}()
-	return out
+
+	return nil
 }
 
-func getWsdlFile(ws string) {
-	names := strings.Split(ws, "/")
-	wsName := names[len(names)-1]
-	if strings.Contains(wsName, "=") {
-		names := strings.Split(wsName, "=")
-		wsName = names[len(names)-1]
-	}
-	resp, err := http.Get(ws)
-	defer resp.Body.Close()
-	checkErr("getWsdlFile", err)
-	if resp.StatusCode == http.StatusOK {
-		downFile, err := os.Create("../../wsdl/" + wsName)
-		checkErr("create WSDL", err)
-		defer downFile.Close()
-		i, _ := strconv.Atoi(resp.Header.Get("Content-Length"))
-		sourceSiz := int64(i)
-		source := resp.Body
+func processBar(total int, fbar func(bar *pb.ProgressBar)) {
+	bar := pb.New(total)
+	bar.ShowFinalTime = true
+	bar.SetUnits(pb.U_BYTES)
 
-		bar := pb.New(int(sourceSiz)).SetUnits(pb.U_BYTES).Prefix(wsName + " ")
+	bar.Start()
+	fbar(bar)
+	bar.Finish()
+}
 
-		bar.Start()
-		bar.ShowFinalTime = true
-		bar.SetMaxWidth(80)
-
-		writer := io.MultiWriter(downFile, bar)
-		io.Copy(writer, source)
-		bar.Finish()
+func checkErr(err error) {
+	if err != nil {
+		log.Println(err)
+		return
 	}
 }
 
 func main() {
-	ws := new(WSDL)
-
-	query := ws.queryParse()
-	var wsUrls []WSDL
-	for o := range query {
-		wsUrls = append(wsUrls, o)
+	wl := NewWsdls()
+	if wl == nil {
+		return
 	}
 
-	for _, ws := range wsUrls {
-		// fmt.Printf("%s -> %s -> %s\n\n", ws.Data, ws.Title, ws.Url)
-		getWsdlFile(ws.Url)
+	fmt.Println("开始下载wsdl...")
+	err := wl.GetWsdlFiles()
+	if err != nil {
+		log.Printf("GetWsdlFile -> %v\n", err)
+		return
 	}
 
-	const timeout = 10
 	d := time.Duration(timeout * time.Second)
-	fmt.Printf("下载结束，%d秒后自动关闭窗口！", timeout)
+	log.Printf("wsdl 下载结束，%d秒后自动关闭窗口！", timeout)
 	select {
 	case <-time.After(d):
-	}
-}
-
-func checkErr(info string, err error) {
-	if err != nil {
-		log.Fatalf("%s -> %s\n", info, err)
 	}
 }
